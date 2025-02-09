@@ -165,10 +165,81 @@
       height: 8px;
       will-change: transform;
     }
+    /* Modal styles for the pop-up warning */
+    #password-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(10, 8, 25, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+    #password-modal .modal-content {
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid var(--neon-purple);
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(188, 19, 254, 0.5);
+      width: 90%;
+      max-width: 400px;
+    }
+    #password-modal h1 {
+      font-size: 2em;
+      margin-bottom: 1rem;
+      color: var(--neon-pink);
+      text-shadow: 0 0 20px var(--neon-purple);
+    }
+    #password-modal p {
+      margin-bottom: 1.5rem;
+    }
+    #password-modal input {
+      width: 80%;
+      padding: 0.5rem;
+      margin: 1rem 0;
+      border: 1px solid var(--neon-purple);
+      border-radius: 5px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+    }
+    #password-modal button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border: 1px solid var(--neon-purple);
+      background: var(--neon-purple);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    #password-modal button:hover {
+      background: var(--neon-pink);
+    }
+    #password-error {
+      color: #ff4444;
+      margin-top: 1rem;
+      display: none;
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
 </head>
 <body>
+  <!-- Password Modal -->
+  <div id="password-modal">
+    <div class="modal-content">
+      <h1>WARNING</h1>
+      <p>This application model is made entirely for tracking studies for the upcoming Matric exam. If this app is shared to you by its creator, enter the passcode given to you.</p>
+      <input type="password" id="password-input" placeholder="Enter passcode" />
+      <br />
+      <button id="password-submit">Submit</button>
+      <p id="password-error">Password is incorrect. Please try again.</p>
+    </div>
+  </div>
+
   <div class="stars" id="stars"></div>
 
   <header>
@@ -215,6 +286,33 @@
   <div class="grid" id="subject-grid"></div>
 
   <script>
+    // Check if the user is already authenticated
+    if (localStorage.getItem('passcodeVerified') === 'true') {
+      document.getElementById('password-modal').style.display = 'none';
+    }
+
+    // Validate the passcode on modal submit
+    document.getElementById('password-submit').addEventListener('click', function() {
+      const passInput = document.getElementById('password-input').value.trim();
+      const errorElement = document.getElementById('password-error');
+      const validPasswords = ['X9obwrDUk8', '7gPWmJIgUA', '0SNiIdtY5b', 'kvLSo3ZARs', 'pI2Ltzzy2U'];
+      if (passInput.length < 10 || validPasswords.indexOf(passInput) === -1) {
+        errorElement.style.display = 'block';
+        errorElement.textContent = 'Password is incorrect. Please try again.';
+      } else {
+        // Set a flag in localStorage to prevent showing the modal again
+        localStorage.setItem('passcodeVerified', 'true');
+        document.getElementById('password-modal').style.display = 'none';
+      }
+    });
+
+    // Allow "Enter" key to submit the passcode
+    document.getElementById('password-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('password-submit').click();
+      }
+    });
+
     // Shooting stars background
     function createStars() {
       const starsContainer = document.getElementById('stars');
@@ -437,3 +535,4 @@
   </script>
 </body>
 </html>
+
